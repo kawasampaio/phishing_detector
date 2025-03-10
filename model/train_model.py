@@ -3,10 +3,11 @@ import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+import dask.dataframe as dd
 
 # Carregar o dataset
 DATASET_PATH = "../data/dataset_final.csv"
-df = pd.read_csv(DATASET_PATH)
+df = dd.read_csv(DATASET_PATH)
 
 # Definir features e labels
 X = df.drop(columns=["url", "label"])
