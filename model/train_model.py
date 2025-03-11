@@ -1,31 +1,33 @@
-import pandas as pd
-import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 import dask.dataframe as dd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+import joblib
 
-# Carregar o dataset
-DATASET_PATH = "../data/dataset_final.csv"
-df = dd.read_csv(DATASET_PATH)
+# Caminho para o dataset
+dataset_path = 'C:/Users/Pichau/Desktop/phishing_detector/data/dataset_final.csv'
 
-# Definir features e labels
-X = df.drop(columns=["url", "label"])
-y = df["label"]
 
-# Dividir os dados em treino e teste
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+print("🔄 Carregando dataset com Dask...")
+df = dd.read_csv(dataset_path)
 
-# Treinar o modelo
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+df = df.compute()  # Converte o Dask DataFrame para Pandas
+X = df['url']  # URLs como entrada
+y = df['label']  # Labels (0 = legítimo, 1 = phishing)
+
+# Vetorização das URLs
+vectorizer = TfidfVectorizer()
+X_vectorized = vectorizer.fit_transform(X)
+
+# Divisão em treino e teste
+X_train, X_test, y_train, y_test = train_test_split(X_vectorized, y, test_size=0.2, random_state=42)
+
+print("🚀 Treinando modelo...")
+model = RandomForestClassifier()
 model.fit(X_train, y_train)
 
-# Avaliar o modelo
-y_pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Acurácia do modelo: {accuracy:.2f}")
+# Salvando o modelo
+joblib.dump(model, '../model/phishing_model.pkl')
+joblib.dump(vectorizer, '../model/vectorizer.pkl')
 
-# Salvar o modelo treinado
-MODEL_PATH = "phishing_model.pkl"
-joblib.dump(model, MODEL_PATH)
-print(f"Modelo salvo em {MODEL_PATH}")
+print("✅ Modelo treinado e salvo com sucesso!")
