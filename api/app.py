@@ -1,40 +1,46 @@
+import sys
+import os
+
+# Adiciona o diretório raiz ao sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from routes.predict import predict_bp
 from flask import Flask, request, jsonify
 import joblib
-import pandas as pd
-import re
-from urllib.parse import urlparse
+import os
 
 app = Flask(__name__)
 
-# Carregar o modelo treinado
-MODEL_PATH = "../model/phishing_model.pkl"
+app.register_blueprint(predict_bp)
+if __name__ == '__main__':
+    app.run(debug=True)
+
+# Caminhos dos modelos
+MODEL_PATH = os.path.join(os.path.dirname(__file__), '../model/phishing_model.pkl')
+VECTORIZER_PATH = os.path.join(os.path.dirname(__file__), '../model/vectorizer.pkl')
+
+# Carregar modelo treinado e vetorizador
+print("🔄 Carregando modelo...")
 model = joblib.load(MODEL_PATH)
+vectorizer = joblib.load(VECTORIZER_PATH)
+print("✅ Modelo carregado com sucesso!")
 
-# Função para extrair características da URL
-def extrair_caracteristicas(url):
-    parsed_url = urlparse(url)
-    return {
-        "comprimento_url": len(url),
-        "tem_https": 1 if parsed_url.scheme == "https" else 0,
-        "tem_subdominio": 1 if len(parsed_url.netloc.split(".")) > 2 else 0,
-        "quantidade_digitos": len(re.findall(r"\\d", url))
-    }
-
-@app.route("/verificar_url", methods=["POST"])
-def verificar_url():
-    data = request.get_json()
-    url = data.get("url")
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.json
+    url = data.get('url', '')
     
     if not url:
-        return jsonify({"error": "URL não fornecida"}), 400
+        return jsonify({'error': 'Nenhuma URL fornecida'}), 400
     
-    caracteristicas = extrair_caracteristicas(url)
-    df = pd.DataFrame([caracteristicas])
+    # Transformar a URL com o vetorizador
+    url_vectorized = vectorizer.transform([url])
     
-    previsao = model.predict(df)[0]
-    resultado = "phishing" if previsao == 1 else "legítima"
+    # Fazer a previsão
+    prediction = model.predict(url_vectorized)[0]
+    resultado = "phishing" if prediction == 1 else "legítima"
     
-    return jsonify({"url": url, "resultado": resultado})
+    return jsonify({'url': url, 'prediction': resultado})
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

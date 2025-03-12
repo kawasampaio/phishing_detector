@@ -27,7 +27,8 @@ model = RandomForestClassifier()
 model.fit(X_train, y_train)
 
 # Salvando o modelo
-joblib.dump(model, '../model/phishing_model.pkl')
-joblib.dump(vectorizer, '../model/vectorizer.pkl')
+joblib.dump(model, 'model/phishing_model.pkl')
+joblib.dump(vectorizer, 'model/vectorizer.pkl')
+
 
 print("✅ Modelo treinado e salvo com sucesso!")
