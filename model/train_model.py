@@ -4,8 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
 
-# Caminho para o dataset
-dataset_path = 'C:/Users/Pichau/Desktop/phishing_detector/data/dataset_final.csv'
+dataset_path = 'C:/Users/Pichau/Desktop/phishing_detector/projeto-mongo/urls.txt'
 
 
 print("🔄 Carregando dataset com Dask...")
