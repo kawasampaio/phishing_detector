@@ -1,9 +1,14 @@
-from projeto_mongo.db import connect_db  # Importa a conexão com o MongoDB
+from banco_dados.db import connect_db  # Importa a conexão com o MongoDB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
 import numpy as np
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'banco_dados')))
+
 
 # Conectar ao banco de dados
 db = connect_db()

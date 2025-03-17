@@ -1,0 +1,6 @@
+https://www.google.com - 0
+https://www.youtube.com - 0
+https://www.wikipedia.org - 0
+http://maliciososite.com - 1
+http://phishing-bank-login.com - 1
+http://fake-verification.com - 1
