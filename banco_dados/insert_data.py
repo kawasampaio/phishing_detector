@@ -7,6 +7,7 @@ def insert_from_file():
     collection = db["urls"]
 
     file_path = os.path.join(os.path.dirname(__file__), "urls.txt")
+    print(f"Tentando abrir o arquivo: {file_path}")
     with open(file_path, "r", encoding="utf-8") as file:
         lines = [line.strip() for line in file.readlines() if line.strip()]  # Remove linhas vazias
 
