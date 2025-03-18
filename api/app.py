@@ -1,7 +1,7 @@
 import sys
 import os
 
-# Adiciona o diretório raiz ao sys.path
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from routes.predict import predict_bp
@@ -19,7 +19,6 @@ if __name__ == '__main__':
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../model/phishing_model.pkl')
 VECTORIZER_PATH = os.path.join(os.path.dirname(__file__), '../model/vectorizer.pkl')
 
-# Carregar modelo treinado e vetorizador
 print("🔄 Carregando modelo...")
 model = joblib.load(MODEL_PATH)
 vectorizer = joblib.load(VECTORIZER_PATH)
