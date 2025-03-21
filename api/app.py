@@ -1,19 +1,16 @@
 import sys
 import os
-
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from routes.predict import predict_bp
-from flask import Flask, request, jsonify
 import joblib
-import os
+from flask import Flask, request, jsonify
+from routes.predict import predict_bp
+
+# Ajustar o path para encontrar arquivos corretamente
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 app = Flask(__name__)
 
-app.register_blueprint(predict_bp)
-if __name__ == '__main__':
-    app.run(debug=True)
+# Registrar as rotas do Blueprint
+app.register_blueprint(predict_bp, url_prefix="/api")
 
 # Caminhos dos modelos
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../model/phishing_model.pkl')
@@ -24,22 +21,21 @@ model = joblib.load(MODEL_PATH)
 vectorizer = joblib.load(VECTORIZER_PATH)
 print("✅ Modelo carregado com sucesso!")
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.json
-    url = data.get('url', '')
+@app.route("/check_url", methods=["GET"])
+def check_url():
+    url = request.args.get("url")
     
     if not url:
-        return jsonify({'error': 'Nenhuma URL fornecida'}), 400
+        return jsonify({"erro": "Nenhuma URL fornecida"}), 400
     
-    # Transformar a URL com o vetorizador
+    # Predição usando o modelo carregado
     url_vectorized = vectorizer.transform([url])
-    
-    # Fazer a previsão
     prediction = model.predict(url_vectorized)[0]
-    resultado = "phishing" if prediction == 1 else "legítima"
-    
-    return jsonify({'url': url, 'prediction': resultado})
+
+    resultado = "perigoso" if prediction == 1 else "seguro"
+
+    return jsonify({"url": url, "resultado": resultado})
 
 if __name__ == '__main__':
+    print("✅ Servidor rodando em http://127.0.0.1:5000")
     app.run(debug=True)
