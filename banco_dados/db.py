@@ -7,11 +7,10 @@ def connect_db():
     try:
         client = MongoClient(MONGO_URI)
         db = client["Urls"] 
-        print("✅ Conectado ao MongoDB!")
+        print("Conectado ao MongoDB!")
         return db
     except Exception as e:
         print(f"Erro ao conectar: {e}")
 
-# Exemplo de teste
 if __name__ == "__main__":
     connect_db()

@@ -4,11 +4,9 @@ import os
 
 predict_bp = Blueprint("predict", __name__)
 
-# Caminhos dos modelos
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '../model/phishing_model.pkl')
 VECTORIZER_PATH = os.path.join(os.path.dirname(__file__), '../model/vectorizer.pkl')
 
-# Carregar modelo
 model = joblib.load(MODEL_PATH)
 vectorizer = joblib.load(VECTORIZER_PATH)
 
